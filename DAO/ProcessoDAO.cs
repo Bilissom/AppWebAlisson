@@ -14,7 +14,6 @@ namespace AppWebAlisson.DAO
             _conexao = conexao;
         }
 
-        // READ — lista todos os processos
         public List<Processo> Listar()
         {
             var lista = new List<Processo>();
@@ -30,15 +29,43 @@ namespace AppWebAlisson.DAO
             return lista;
         }
 
+        // CREATE — insere um novo processo no banco
+        public void Inserir(Processo processo)
+        {
+            try
+            {
+                string sql = @"INSERT INTO processos
+                               (numero_pro, data_pro, interessado_pro,
+                                assunto_pro, descricao_pro, situacao_pro)
+                               VALUES
+                               (@numero, @data, @interessado, @assunto, @descricao, @situacao)";
+                
+                using var comando = _conexao.CreateCommand(sql);
+                comando.Parameters.AddWithValue("@numero", processo.Numero);
+                comando.Parameters.AddWithValue("@data", processo.Data!.Value.ToDateTime(TimeOnly.MinValue));
+                comando.Parameters.AddWithValue("@interessado", processo.Interessado);
+                comando.Parameters.AddWithValue("@assunto", processo.Assunto);
+                comando.Parameters.AddWithValue("@descricao", processo.Descricao);
+                comando.Parameters.AddWithValue("@situacao", processo.Situacao);
+                
+                comando.ExecuteNonQuery();
+            }
+            catch
+            {
+                throw;
+            }
+        }
+
         // Método auxiliar: converte a linha atual do leitor em um objeto Processo.
         // Usa o DAOHelper para ler com segurança as colunas que podem ser NULL.
         private static Processo MapearProcesso(MySqlDataReader leitor)
         {
+            var dt = DAOHelper.GetDateTime(leitor, "data_pro");
             return new Processo
             {
                 Id = leitor.GetInt32("id_pro"),
                 Numero = DAOHelper.GetString(leitor, "numero_pro"),
-                Data = DAOHelper.GetDateTime(leitor, "data_pro"),
+                Data = dt.HasValue ? DateOnly.FromDateTime(dt.Value) : null,
                 Interessado = DAOHelper.GetString(leitor, "interessado_pro"),
                 Assunto = DAOHelper.GetString(leitor, "assunto_pro"),
                 Descricao = DAOHelper.GetString(leitor, "descricao_pro"),
