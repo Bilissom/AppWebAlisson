@@ -21,7 +21,7 @@
         <table class="table align-middle">
             <thead>
                 <tr>
-                    <th>Id</th>
+                    <th>ID</th>
                     <th>Número</th>
                     <th>Interessado</th>
                     <th>Assunto</th>
@@ -30,15 +30,24 @@
                 </tr>
             </thead>
             <tbody>
-                @foreach (var processo in processos)
+                @foreach (var p in processos)
                 {
                     <tr>
-                        <td>@processo.Id</td>
-                        <td>@processo.Numero</td>
-                        <td>@processo.Interessado</td>
-                        <td>@processo.Assunto</td>
-                        <td>@processo.Situacao</td>
-                        <td></td>
+                        <td>@p.Id</td>
+                        <td>@p.Numero</td>
+                        <td>@p.Interessado</td>
+                        <td>@p.Assunto</td>
+                        <td>@p.Situacao</td>
+                        <td class="text-end">
+                            <div class="btn-group btn-group-sm">
+                                <a href="@($"/processos/editar/{p.Id}")" class="btn btn-light border text-primary" title="Editar">
+                                    <i class="bi bi-pencil"></i>
+                                </a>
+                                <a href="@($"/processos/excluir/{p.Id}")" class="btn btn-light border text-danger" title="Excluir">
+                                    <i class="bi bi-trash"></i>
+                                </a>
+                            </div>
+                        </td>
                     </tr>
                 }
             </tbody>
